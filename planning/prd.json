@@ -37,9 +37,9 @@
     "payments": "Stripe"
   },
   "progress": {
-    "completed": 8,
+    "completed": 9,
     "total": 12,
-    "percentage": 67
+    "percentage": 75
   },
   "items": [
     {
@@ -209,8 +209,8 @@
         "PROBAR: subir entregables aparecen en dashboard cliente"
       ],
       "priority": "medium",
-      "passes": false,
-      "progress": 0
+      "passes": true,
+      "progress": 100
     },
     {
       "id": "10",
