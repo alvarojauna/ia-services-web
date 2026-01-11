@@ -37,9 +37,9 @@
     "payments": "Stripe"
   },
   "progress": {
-    "completed": 5,
+    "completed": 7,
     "total": 12,
-    "percentage": 42
+    "percentage": 58
   },
   "items": [
     {
@@ -135,8 +135,8 @@
         "PROBAR: permisos (usuario solo accede a sus archivos)"
       ],
       "priority": "medium",
-      "passes": false,
-      "progress": 0
+      "passes": true,
+      "progress": 100
     },
     {
       "id": "6",
@@ -150,8 +150,8 @@
         "PROBAR: enviar email de prueba (verificar llega a inbox, no spam)"
       ],
       "priority": "medium",
-      "passes": false,
-      "progress": 0
+      "passes": true,
+      "progress": 100
     },
     {
       "id": "7",
@@ -170,8 +170,8 @@
         "PROBAR: responsive en diferentes dispositivos"
       ],
       "priority": "high",
-      "passes": false,
-      "progress": 0
+      "passes": true,
+      "progress": 100
     },
     {
       "id": "8",
