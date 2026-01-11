@@ -37,9 +37,9 @@
     "payments": "Stripe"
   },
   "progress": {
-    "completed": 3,
+    "completed": 4,
     "total": 12,
-    "percentage": 25
+    "percentage": 33
   },
   "items": [
     {
@@ -117,8 +117,8 @@
         "PROBAR: queries con indices secundarios"
       ],
       "priority": "high",
-      "passes": false,
-      "progress": 0
+      "passes": true,
+      "progress": 100
     },
     {
       "id": "5",
