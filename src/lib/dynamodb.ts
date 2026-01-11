@@ -11,8 +11,8 @@ export async function getItem<T>(tableName: string, key: Record<string, string>)
   return (result.Item as T) || null;
 }
 
-export async function putItem<T extends Record<string, unknown>>(tableName: string, item: T): Promise<T> {
-  await dynamodb.send(new PutCommand({ TableName: tableName, Item: item }));
+export async function putItem<T>(tableName: string, item: T): Promise<T> {
+  await dynamodb.send(new PutCommand({ TableName: tableName, Item: item as Record<string, unknown> }));
   return item;
 }
 

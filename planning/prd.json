@@ -37,9 +37,9 @@
     "payments": "Stripe"
   },
   "progress": {
-    "completed": 2,
+    "completed": 3,
     "total": 12,
-    "percentage": 17
+    "percentage": 25
   },
   "items": [
     {
@@ -99,8 +99,8 @@
         "PROBAR: rutas protegidas bloquean acceso sin auth"
       ],
       "priority": "high",
-      "passes": false,
-      "progress": 0
+      "passes": true,
+      "progress": 100
     },
     {
       "id": "4",
