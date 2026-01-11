@@ -4,13 +4,13 @@ import { getAllProjects, createProject, getProjectsByClientId } from '@/lib/serv
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const clientId = searchParams.get('clientId');
+    const clientId = searchParams.get('clientId') || searchParams.get('userId');
 
     const projects = clientId
       ? await getProjectsByClientId(clientId)
       : await getAllProjects();
 
-    return NextResponse.json({ success: true, data: projects });
+    return NextResponse.json({ success: true, projects });
   } catch (error) {
     console.error('Error fetching projects:', error);
     return NextResponse.json(

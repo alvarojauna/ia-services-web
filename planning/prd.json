@@ -37,9 +37,9 @@
     "payments": "Stripe"
   },
   "progress": {
-    "completed": 7,
+    "completed": 8,
     "total": 12,
-    "percentage": 58
+    "percentage": 67
   },
   "items": [
     {
@@ -190,8 +190,8 @@
         "PROBAR: resena se guarda correctamente"
       ],
       "priority": "medium",
-      "passes": false,
-      "progress": 0
+      "passes": true,
+      "progress": 100
     },
     {
       "id": "9",
