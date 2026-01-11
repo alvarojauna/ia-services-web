@@ -1,0 +1,276 @@
+{
+  "name": "Web App - Servicios de IA/ML",
+  "description": "Plataforma web profesional para vender servicios de Inteligencia Artificial y Machine Learning. Incluye landing page, catalogo de servicios con 3 planes, blog, portfolio, autenticacion de clientes, dashboard para seguimiento de proyectos, panel de administracion y sistema de pagos.",
+  "business": {
+    "type": "Servicios de IA/ML",
+    "services": [
+      "Desarrollo de chatbots y asistentes IA",
+      "Modelos de Machine Learning personalizados",
+      "Automatizacion de procesos con IA",
+      "Consultoria y asesoria tecnica en IA"
+    ],
+    "plans": [
+      {
+        "name": "Basico",
+        "price": "A definir",
+        "features": ["Chatbot simple", "1 revision", "Documentacion basica"]
+      },
+      {
+        "name": "Pro",
+        "price": "A definir",
+        "features": ["Todo lo basico", "Integracion con APIs", "3 revisiones", "Soporte 30 dias"]
+      },
+      {
+        "name": "Enterprise",
+        "price": "A definir",
+        "features": ["Todo lo Pro", "Consultoria dedicada", "Soporte prioritario", "Codigo fuente"]
+      }
+    ]
+  },
+  "stack": {
+    "framework": "NextJS 14 + Tailwind CSS",
+    "hosting": "AWS Amplify",
+    "auth": "Amazon Cognito",
+    "database": "Amazon DynamoDB",
+    "storage": "Amazon S3",
+    "email": "Amazon SES",
+    "payments": "Stripe"
+  },
+  "progress": {
+    "completed": 1,
+    "total": 12,
+    "percentage": 8
+  },
+  "items": [
+    {
+      "id": "1",
+      "category": "aws-infra",
+      "description": "Configurar infraestructura AWS",
+      "steps": [
+        "Crear cuenta AWS (si no existe)",
+        "Configurar AWS CLI y credenciales locales",
+        "Crear User Pool en Cognito con verificacion de email",
+        "Crear App Client en Cognito",
+        "Crear tablas en DynamoDB (Users, Projects, BlogPosts, Reviews)",
+        "Crear bucket S3 con CORS configurado",
+        "Verificar dominio en SES (o usar sandbox para desarrollo)",
+        "Crear IAM roles y policies necesarias",
+        "Documentar ARNs y configuraciones en .env.example"
+      ],
+      "priority": "high",
+      "passes": true,
+      "progress": 100
+    },
+    {
+      "id": "2",
+      "category": "setup",
+      "description": "Proyecto NextJS + Amplify",
+      "steps": [
+        "Crear proyecto NextJS 14 con App Router",
+        "Configurar Tailwind CSS",
+        "Configurar estructura de carpetas (app/, components/, lib/)",
+        "Crear .env.local con variables de AWS",
+        "Instalar AWS SDK y dependencias",
+        "Crear app en AWS Amplify",
+        "Conectar repositorio GitHub a Amplify",
+        "Configurar variables de entorno en Amplify",
+        "Verificar deploy inicial funciona"
+      ],
+      "priority": "high",
+      "passes": false,
+      "progress": 0
+    },
+    {
+      "id": "3",
+      "category": "auth",
+      "description": "Autenticacion con Amazon Cognito",
+      "steps": [
+        "Configurar Amplify Auth con Cognito existente",
+        "Crear pagina de registro (/register)",
+        "Crear pagina de login (/login)",
+        "Crear pagina de verificacion de email",
+        "Crear pagina de recuperar contrasena",
+        "Implementar middleware de proteccion de rutas",
+        "Crear AuthContext para estado global",
+        "PROBAR: registro de usuario nuevo",
+        "PROBAR: verificacion de email",
+        "PROBAR: login/logout",
+        "PROBAR: recuperar contrasena",
+        "PROBAR: rutas protegidas bloquean acceso sin auth"
+      ],
+      "priority": "high",
+      "passes": false,
+      "progress": 0
+    },
+    {
+      "id": "4",
+      "category": "database",
+      "description": "Integracion con DynamoDB",
+      "steps": [
+        "Crear lib/dynamodb.ts con cliente configurado",
+        "Crear funciones CRUD para Users",
+        "Crear funciones CRUD para Projects",
+        "Crear funciones CRUD para BlogPosts",
+        "Crear funciones CRUD para Reviews",
+        "Crear API routes para cada entidad",
+        "PROBAR: crear/leer/actualizar/eliminar en cada tabla",
+        "PROBAR: queries con indices secundarios"
+      ],
+      "priority": "high",
+      "passes": false,
+      "progress": 0
+    },
+    {
+      "id": "5",
+      "category": "storage",
+      "description": "Almacenamiento con Amazon S3",
+      "steps": [
+        "Crear lib/s3.ts con cliente configurado",
+        "Implementar generacion de presigned URLs para upload",
+        "Implementar generacion de presigned URLs para download",
+        "Crear API route para obtener URLs firmadas",
+        "Crear componente FileUpload reutilizable",
+        "PROBAR: subir archivo desde el navegador",
+        "PROBAR: descargar archivo con URL firmada",
+        "PROBAR: permisos (usuario solo accede a sus archivos)"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "progress": 0
+    },
+    {
+      "id": "6",
+      "category": "email",
+      "description": "Emails con Amazon SES",
+      "steps": [
+        "Crear lib/ses.ts con cliente configurado",
+        "Crear template HTML de email base",
+        "Implementar funcion sendEmail generica",
+        "Crear emails: bienvenida, confirmacion compra, actualizacion proyecto",
+        "PROBAR: enviar email de prueba (verificar llega a inbox, no spam)"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "progress": 0
+    },
+    {
+      "id": "7",
+      "category": "pages",
+      "description": "Paginas publicas",
+      "steps": [
+        "Crear componentes base (Header, Footer, Button, Card)",
+        "Crear pagina de inicio (/) con hero y testimonios",
+        "Crear pagina de servicios (/services) con 3 planes",
+        "Crear pagina de portfolio (/portfolio)",
+        "Crear pagina de blog (/blog) y detalle (/blog/[slug])",
+        "Crear pagina de contacto (/contact) con formulario",
+        "Implementar responsive design (mobile/tablet/desktop)",
+        "PROBAR: navegacion entre paginas",
+        "PROBAR: formulario de contacto envia email",
+        "PROBAR: responsive en diferentes dispositivos"
+      ],
+      "priority": "high",
+      "passes": false,
+      "progress": 0
+    },
+    {
+      "id": "8",
+      "category": "dashboard",
+      "description": "Dashboard de cliente",
+      "steps": [
+        "Crear layout protegido /dashboard con sidebar",
+        "Crear pagina principal con resumen",
+        "Crear pagina de proyectos (/dashboard/projects)",
+        "Crear detalle de proyecto con estado y progreso",
+        "Implementar descarga de entregables",
+        "Crear formulario para dejar resenas",
+        "Crear pagina de perfil",
+        "PROBAR: usuario ve solo sus proyectos",
+        "PROBAR: descarga de archivos funciona",
+        "PROBAR: resena se guarda correctamente"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "progress": 0
+    },
+    {
+      "id": "9",
+      "category": "admin",
+      "description": "Panel administrativo",
+      "steps": [
+        "Crear middleware que verifica rol admin",
+        "Crear layout /admin con navegacion",
+        "Crear dashboard con metricas (ventas, clientes, proyectos)",
+        "Crear CRUD de proyectos con subida de entregables",
+        "Crear lista de clientes",
+        "Crear historial de ventas",
+        "PROBAR: solo admin puede acceder",
+        "PROBAR: crear proyecto y asignar a cliente",
+        "PROBAR: subir entregables aparecen en dashboard cliente"
+      ],
+      "priority": "medium",
+      "passes": false,
+      "progress": 0
+    },
+    {
+      "id": "10",
+      "category": "payments",
+      "description": "Pagos con Stripe",
+      "steps": [
+        "Crear cuenta Stripe y obtener API keys",
+        "Crear productos y precios en Stripe Dashboard",
+        "Instalar Stripe SDK",
+        "Crear API route POST /api/checkout para crear session",
+        "Crear pagina /checkout/success",
+        "Crear pagina /checkout/cancel",
+        "Crear API route POST /api/webhooks/stripe",
+        "Configurar webhook en Stripe Dashboard",
+        "Al confirmar pago: crear proyecto en DynamoDB y enviar email",
+        "PROBAR: flujo completo con tarjeta de prueba 4242...",
+        "PROBAR: webhook actualiza base de datos",
+        "PROBAR: cliente recibe email de confirmacion"
+      ],
+      "priority": "high",
+      "passes": false,
+      "progress": 0
+    },
+    {
+      "id": "11",
+      "category": "testing",
+      "description": "Testing end-to-end",
+      "steps": [
+        "Probar flujo completo: registro -> verificar email -> login",
+        "Probar flujo completo: ver servicios -> comprar plan -> pago",
+        "Probar flujo admin: crear proyecto -> subir entregables",
+        "Probar flujo cliente: ver proyecto -> descargar archivos -> dejar resena",
+        "Probar emails llegan correctamente",
+        "Probar en mobile (responsive)",
+        "Probar con usuarios reales (beta testers)",
+        "Documentar bugs encontrados y corregir"
+      ],
+      "priority": "high",
+      "passes": false,
+      "progress": 0
+    },
+    {
+      "id": "12",
+      "category": "production",
+      "description": "Deploy a produccion",
+      "steps": [
+        "Configurar dominio personalizado en Amplify",
+        "Configurar SSL/HTTPS",
+        "Salir del sandbox de SES (solicitar produccion)",
+        "Configurar variables de entorno de produccion",
+        "Cambiar Stripe a modo live (API keys de produccion)",
+        "Configurar webhook de Stripe con URL de produccion",
+        "Verificar todos los servicios AWS en produccion",
+        "Crear backup policy para DynamoDB",
+        "Configurar alarmas en CloudWatch",
+        "PROBAR: flujo completo en produccion con pago real pequeno"
+      ],
+      "priority": "high",
+      "passes": false,
+      "progress": 0
+    }
+  ]
+}
