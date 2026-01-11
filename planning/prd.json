@@ -37,9 +37,9 @@
     "payments": "Stripe"
   },
   "progress": {
-    "completed": 4,
+    "completed": 5,
     "total": 12,
-    "percentage": 33
+    "percentage": 42
   },
   "items": [
     {
