@@ -1,17 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe, plans, PlanKey } from '@/lib/stripe';
+import { getStripe, plans, PlanKey } from '@/lib/stripe';
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if Stripe is configured
-    if (!stripe) {
-      console.error('STRIPE_SECRET_KEY is not configured');
-      return NextResponse.json(
-        { success: false, error: 'Payment system not configured' },
-        { status: 500 }
-      );
-    }
-
     const body = await request.json();
     const { plan, userId, userEmail } = body;
 
@@ -31,6 +22,9 @@ export async function POST(request: NextRequest) {
     }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+
+    // Get Stripe client (lazy initialization at runtime)
+    const stripe = getStripe();
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
@@ -69,7 +63,7 @@ export async function POST(request: NextRequest) {
     console.error('Error creating checkout session:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { success: false, error: `Failed to create checkout session: ${errorMessage}` },
+      { success: false, error: errorMessage },
       { status: 500 }
     );
   }

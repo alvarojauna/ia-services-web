@@ -1,20 +1,27 @@
 import Stripe from 'stripe';
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+// Lazy initialization - creates Stripe client on first use (runtime, not build time)
+let stripeInstance: Stripe | null = null;
 
-export const stripe = stripeSecretKey
-  ? new Stripe(stripeSecretKey, {
+export function getStripe(): Stripe {
+  if (!stripeInstance) {
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+    if (!secretKey) {
+      throw new Error('STRIPE_SECRET_KEY is not configured');
+    }
+    stripeInstance = new Stripe(secretKey, {
       apiVersion: '2025-12-15.clover',
       typescript: true,
-    })
-  : (null as unknown as Stripe);
+    });
+  }
+  return stripeInstance;
+}
 
-// Plan configuration with Stripe price IDs
+// Plan configuration
 export const plans = {
   basic: {
     name: 'Básico',
     price: 499,
-    priceId: process.env.STRIPE_PRICE_BASIC || '',
     features: [
       'Chatbot simple para tu web',
       '1 revisión incluida',
@@ -26,7 +33,6 @@ export const plans = {
   pro: {
     name: 'Pro',
     price: 999,
-    priceId: process.env.STRIPE_PRICE_PRO || '',
     features: [
       'Todo lo del plan Básico',
       'Integración con APIs externas',
@@ -39,7 +45,6 @@ export const plans = {
   enterprise: {
     name: 'Enterprise',
     price: 2499,
-    priceId: process.env.STRIPE_PRICE_ENTERPRISE || '',
     features: [
       'Todo lo del plan Pro',
       'Consultoría dedicada',

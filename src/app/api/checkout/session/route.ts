@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+import { getStripe } from '@/lib/stripe';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     return NextResponse.json({
@@ -26,8 +27,9 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error retrieving session:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { success: false, error: 'Failed to retrieve session' },
+      { success: false, error: errorMessage },
       { status: 500 }
     );
   }

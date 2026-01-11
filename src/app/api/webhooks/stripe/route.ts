@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+import { getStripe } from '@/lib/stripe';
 import { createProject } from '@/lib/services/projects';
 import { sendEmail } from '@/lib/ses';
 import Stripe from 'stripe';
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    // Verify webhook signature
+    const stripe = getStripe();
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
     if (webhookSecret) {
