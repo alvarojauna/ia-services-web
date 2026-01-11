@@ -1,7 +1,19 @@
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import { awsConfig } from './aws-config';
 
-const sesClient = new SESClient({ region: awsConfig.ses.region });
+const region = process.env.APP_AWS_REGION || process.env.AWS_REGION || awsConfig.ses.region;
+
+const clientConfig: ConstructorParameters<typeof SESClient>[0] = { region };
+
+// Use custom credentials if available (for Amplify deployment)
+if (process.env.APP_AWS_ACCESS_KEY_ID && process.env.APP_AWS_SECRET_ACCESS_KEY) {
+  clientConfig.credentials = {
+    accessKeyId: process.env.APP_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.APP_AWS_SECRET_ACCESS_KEY,
+  };
+}
+
+const sesClient = new SESClient(clientConfig);
 
 interface EmailParams {
   to: string | string[];

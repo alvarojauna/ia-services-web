@@ -2,7 +2,19 @@ import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } fro
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { awsConfig } from './aws-config';
 
-const s3Client = new S3Client({ region: awsConfig.region });
+const region = process.env.APP_AWS_REGION || process.env.AWS_REGION || awsConfig.region;
+
+const clientConfig: ConstructorParameters<typeof S3Client>[0] = { region };
+
+// Use custom credentials if available (for Amplify deployment)
+if (process.env.APP_AWS_ACCESS_KEY_ID && process.env.APP_AWS_SECRET_ACCESS_KEY) {
+  clientConfig.credentials = {
+    accessKeyId: process.env.APP_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.APP_AWS_SECRET_ACCESS_KEY,
+  };
+}
+
+const s3Client = new S3Client(clientConfig);
 
 export async function getUploadUrl(key: string, contentType: string, expiresIn = 3600): Promise<string> {
   const command = new PutObjectCommand({

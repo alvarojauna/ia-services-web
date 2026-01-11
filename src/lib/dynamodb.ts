@@ -2,7 +2,19 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, DeleteCommand, QueryCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { awsConfig } from './aws-config';
 
-const client = new DynamoDBClient({ region: awsConfig.region });
+const region = process.env.APP_AWS_REGION || process.env.AWS_REGION || awsConfig.region;
+
+const clientConfig: ConstructorParameters<typeof DynamoDBClient>[0] = { region };
+
+// Use custom credentials if available (for Amplify deployment)
+if (process.env.APP_AWS_ACCESS_KEY_ID && process.env.APP_AWS_SECRET_ACCESS_KEY) {
+  clientConfig.credentials = {
+    accessKeyId: process.env.APP_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.APP_AWS_SECRET_ACCESS_KEY,
+  };
+}
+
+const client = new DynamoDBClient(clientConfig);
 export const dynamodb = DynamoDBDocumentClient.from(client);
 
 // Generic CRUD operations
