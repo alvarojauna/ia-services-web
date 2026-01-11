@@ -37,9 +37,9 @@
     "payments": "Stripe"
   },
   "progress": {
-    "completed": 1,
+    "completed": 2,
     "total": 12,
-    "percentage": 8
+    "percentage": 17
   },
   "items": [
     {
@@ -77,8 +77,8 @@
         "Verificar deploy inicial funciona"
       ],
       "priority": "high",
-      "passes": false,
-      "progress": 0
+      "passes": true,
+      "progress": 100
     },
     {
       "id": "3",
