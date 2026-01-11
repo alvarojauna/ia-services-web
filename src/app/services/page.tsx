@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import CheckoutButton from '@/components/CheckoutButton';
 
 const plans = [
   {
     name: 'Básico',
     price: '499',
+    planId: 'basic' as const,
     description: 'Ideal para pequeños negocios que quieren empezar con IA',
     features: [
       'Chatbot simple para tu web',
@@ -15,11 +17,12 @@ const plans = [
       'Entrega en 2 semanas',
     ],
     highlighted: false,
-    cta: 'Empezar',
+    cta: 'Contratar',
   },
   {
     name: 'Pro',
     price: '999',
+    planId: 'pro' as const,
     description: 'Para empresas que necesitan soluciones más avanzadas',
     features: [
       'Todo lo del plan Básico',
@@ -30,11 +33,12 @@ const plans = [
       'Entrega en 3 semanas',
     ],
     highlighted: true,
-    cta: 'Más Popular',
+    cta: 'Contratar',
   },
   {
     name: 'Enterprise',
     price: '2499',
+    planId: 'enterprise' as const,
     description: 'Soluciones a medida para grandes proyectos',
     features: [
       'Todo lo del plan Pro',
@@ -45,7 +49,7 @@ const plans = [
       'Mantenimiento 3 meses',
     ],
     highlighted: false,
-    cta: 'Contactar',
+    cta: 'Contratar',
   },
 ];
 
@@ -144,16 +148,9 @@ export default function ServicesPage() {
                         </li>
                       ))}
                     </ul>
-                    <Link
-                      href="/contact"
-                      className={`block w-full text-center py-3 rounded-lg font-semibold transition ${
-                        plan.highlighted
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600'
-                      }`}
-                    >
+                    <CheckoutButton plan={plan.planId} highlighted={plan.highlighted}>
                       {plan.cta}
-                    </Link>
+                    </CheckoutButton>
                   </div>
                 </div>
               ))}

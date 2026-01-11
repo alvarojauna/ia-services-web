@@ -9,7 +9,7 @@ Plataforma web profesional para vender servicios de Inteligencia Artificial y Ma
 - Automatizacion de procesos con IA
 - Consultoria y asesoria tecnica en IA
 
-**Modelo de negocio:** 3 planes (Basico, Pro, Enterprise)
+**Modelo de negocio:** 3 planes (Basico €499, Pro €999, Enterprise €2499)
 
 ## Arquitectura
 
@@ -51,32 +51,113 @@ Plataforma web profesional para vender servicios de Inteligencia Artificial y Ma
 | Database | Amazon DynamoDB | Datos de usuarios, proyectos |
 | Storage | Amazon S3 | Archivos y entregables |
 | Email | Amazon SES | Notificaciones |
-| Pagos | Stripe | Checkout y suscripciones |
+| Pagos | Stripe | Checkout y webhooks |
 
 ## Estado Actual
-- Fase: Planificacion
-- Progreso: 0/12 items (0%)
+- Fase: Desarrollo
+- Progreso: 10/12 items (83%)
+
+### Items Completados
+1. Infraestructura AWS (Cognito, DynamoDB, S3, SES)
+2. Proyecto NextJS + Amplify
+3. Autenticacion con Cognito
+4. Integracion DynamoDB
+5. Almacenamiento S3
+6. Emails con SES
+7. Paginas publicas (inicio, servicios, portfolio, blog, contacto)
+8. Dashboard de cliente
+9. Panel administrativo
+10. Pagos con Stripe
+
+### Items Pendientes
+11. Testing end-to-end
+12. Deploy a produccion
 
 ## Paginas de la Web
 
 **Publicas:**
 - `/` - Inicio (hero, servicios, testimonios)
-- `/services` - Catalogo de 3 planes con precios
+- `/services` - Catalogo de 3 planes con precios y boton de pago
 - `/portfolio` - Proyectos anteriores
 - `/blog` - Articulos sobre IA
+- `/blog/[slug]` - Detalle de articulo
 - `/contact` - Formulario de contacto
 
-**Autenticadas (cliente):**
-- `/login`, `/register` - Autenticacion
+**Autenticacion:**
+- `/login` - Inicio de sesion
+- `/register` - Registro de usuario
+- `/verify` - Verificacion de email
+- `/forgot-password` - Recuperar contrasena
+
+**Dashboard Cliente:**
 - `/dashboard` - Resumen del cliente
 - `/dashboard/projects` - Lista de proyectos
-- `/dashboard/projects/[id]` - Detalle y entregables
+- `/dashboard/projects/[id]` - Detalle con progreso y entregables
+- `/dashboard/profile` - Perfil del usuario
 
-**Admin:**
-- `/admin` - Metricas y resumen
-- `/admin/projects` - Gestionar proyectos
+**Panel Admin:**
+- `/admin` - Dashboard con metricas
+- `/admin/projects` - Gestionar proyectos (CRUD)
+- `/admin/projects/new` - Crear nuevo proyecto
+- `/admin/projects/[id]` - Editar proyecto y subir entregables
 - `/admin/clients` - Lista de clientes
 - `/admin/sales` - Historial de ventas
+
+**Checkout:**
+- `/checkout/success` - Pago completado
+- `/checkout/cancel` - Pago cancelado
+
+## API Routes
+
+| Endpoint | Metodo | Descripcion |
+|----------|--------|-------------|
+| `/api/users` | GET | Obtener usuario |
+| `/api/projects` | GET/POST | Listar/crear proyectos |
+| `/api/projects/[id]` | GET/PUT/DELETE | CRUD proyecto |
+| `/api/projects/[id]/deliverables` | POST | Agregar entregable |
+| `/api/projects/[id]/deliverables/[id]` | DELETE | Eliminar entregable |
+| `/api/blog` | GET | Listar articulos |
+| `/api/blog/[slug]` | GET | Detalle articulo |
+| `/api/reviews` | GET/POST | Resenas |
+| `/api/contact` | POST | Enviar formulario contacto |
+| `/api/upload` | POST | Obtener URL de upload S3 |
+| `/api/checkout` | POST | Crear sesion Stripe |
+| `/api/checkout/session` | GET | Obtener detalles sesion |
+| `/api/webhooks/stripe` | POST | Webhook de Stripe |
+
+## Flujo de Pago con Stripe
+
+```
+Usuario -> /services -> Click "Contratar"
+                            |
+                            v
+                    ¿Autenticado?
+                    /           \
+                  No            Si
+                  |              |
+                  v              v
+              /login        /api/checkout
+                  |              |
+                  v              v
+              Redirect      Stripe Checkout
+                  |              |
+                  +------+-------+
+                         |
+                         v
+                  Pago exitoso?
+                  /           \
+                 No           Si
+                 |             |
+                 v             v
+          /checkout/cancel   Webhook recibe evento
+                              |
+                              v
+                        - Crear proyecto en DynamoDB
+                        - Enviar email confirmacion
+                              |
+                              v
+                        /checkout/success
+```
 
 ## Decisiones Tecnicas
 
@@ -84,10 +165,13 @@ Plataforma web profesional para vender servicios de Inteligencia Artificial y Ma
 |----------|----------|---------------|
 | Base de datos | DynamoDB | Serverless, escala automatica, bajo costo inicial |
 | Auth | Cognito | Integrado con AWS, maneja verificacion email |
-| Pagos | Stripe | Estandar industria, no hay equivalente bueno en AWS |
-| IA en la web | No incluido | Se puede agregar Bedrock despues si se necesita |
+| Pagos | Stripe | Estandar industria, facil integracion, webhooks |
+| Storage | S3 + Presigned URLs | Seguro, upload directo desde cliente |
+| Email | SES | Bajo costo, alta entregabilidad |
 
 ## Proximos Pasos
-1. Configurar infraestructura AWS (Cognito, DynamoDB, S3, SES)
-2. Crear proyecto NextJS con Amplify
-3. Implementar autenticacion
+1. Configurar webhook en Stripe Dashboard
+2. Agregar variables de entorno Stripe en AWS Amplify
+3. Testing end-to-end de todos los flujos
+4. Configurar dominio personalizado
+5. Deploy a produccion

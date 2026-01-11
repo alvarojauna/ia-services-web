@@ -37,9 +37,9 @@
     "payments": "Stripe"
   },
   "progress": {
-    "completed": 9,
+    "completed": 10,
     "total": 12,
-    "percentage": 75
+    "percentage": 83
   },
   "items": [
     {
@@ -231,8 +231,8 @@
         "PROBAR: cliente recibe email de confirmacion"
       ],
       "priority": "high",
-      "passes": false,
-      "progress": 0
+      "passes": true,
+      "progress": 100
     },
     {
       "id": "11",
