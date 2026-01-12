@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, ReactNode, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, TargetAndTransition } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
@@ -28,24 +28,18 @@ const arrows: Record<TooltipPosition, string> = {
   right: 'right-full top-1/2 -translate-y-1/2 border-r-gray-900 dark:border-r-gray-700 border-t-transparent border-b-transparent border-l-transparent',
 };
 
-const animations: Record<TooltipPosition, { initial: TargetAndTransition; animate: TargetAndTransition }> = {
-  top: {
-    initial: { opacity: 0, y: 5 },
-    animate: { opacity: 1, y: 0 },
-  },
-  bottom: {
-    initial: { opacity: 0, y: -5 },
-    animate: { opacity: 1, y: 0 },
-  },
-  left: {
-    initial: { opacity: 0, x: 5 },
-    animate: { opacity: 1, x: 0 },
-  },
-  right: {
-    initial: { opacity: 0, x: -5 },
-    animate: { opacity: 1, x: 0 },
-  },
-};
+function getAnimation(pos: TooltipPosition) {
+  switch (pos) {
+    case 'top':
+      return { initial: { opacity: 0, y: 5 }, animate: { opacity: 1, y: 0 } };
+    case 'bottom':
+      return { initial: { opacity: 0, y: -5 }, animate: { opacity: 1, y: 0 } };
+    case 'left':
+      return { initial: { opacity: 0, x: 5 }, animate: { opacity: 1, x: 0 } };
+    case 'right':
+      return { initial: { opacity: 0, x: -5 }, animate: { opacity: 1, x: 0 } };
+  }
+}
 
 export default function Tooltip({
   content,
@@ -88,8 +82,8 @@ export default function Tooltip({
       <AnimatePresence>
         {isVisible && (
           <motion.div
-            initial={animations[position].initial}
-            animate={animations[position].animate}
+            initial={getAnimation(position).initial}
+            animate={getAnimation(position).animate}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
             className={cn(
