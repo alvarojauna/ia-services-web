@@ -29,7 +29,7 @@ export default function StatsSection() {
               <div className="text-center group">
                 <div className="relative inline-block">
                   <div className="text-5xl md:text-6xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">
-                    <AnimatedCounter end={stat.value} duration={2} />
+                    <AnimatedCounter value={stat.value} duration={2} />
                     <span className="text-blue-400">{stat.suffix}</span>
                   </div>
                   <div className="absolute -inset-4 bg-blue-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
