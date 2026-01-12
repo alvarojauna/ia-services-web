@@ -100,7 +100,7 @@ export default function DashboardPage() {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-          Bienvenido de vuelta{user?.name ? `, ${user.name.split(' ')[0]}` : ''}
+          Bienvenido de vuelta
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
           Aquí tienes un resumen de tus proyectos y actividad reciente.
