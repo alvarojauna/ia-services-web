@@ -33,7 +33,7 @@ export default function StatusPieChart({ projects }: StatusPieChartProps) {
     });
 
     return Object.entries(statusCounts)
-      .filter(([_, count]) => count > 0)
+      .filter((entry) => entry[1] > 0)
       .map(([status, count]) => ({
         name: statusConfig[status as keyof typeof statusConfig].label,
         value: count,
@@ -41,7 +41,11 @@ export default function StatusPieChart({ projects }: StatusPieChartProps) {
       }));
   }, [projects]);
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  interface PieTooltipPayload {
+    payload: { name: string; value: number; color: string };
+  }
+
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: PieTooltipPayload[] }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (

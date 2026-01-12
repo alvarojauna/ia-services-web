@@ -55,12 +55,18 @@ export default function ProjectsChart({ projects }: ProjectsChartProps) {
     return months;
   }, [projects]);
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  interface TooltipPayloadEntry {
+    name: string;
+    value: number;
+    color: string;
+  }
+
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: TooltipPayloadEntry[]; label?: string }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
           <p className="font-medium text-gray-900 dark:text-white mb-1">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry, index) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
               {entry.name}: {entry.value}
             </p>
