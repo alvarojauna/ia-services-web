@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, ReactNode, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, TargetAndTransition } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
@@ -28,7 +28,7 @@ const arrows: Record<TooltipPosition, string> = {
   right: 'right-full top-1/2 -translate-y-1/2 border-r-gray-900 dark:border-r-gray-700 border-t-transparent border-b-transparent border-l-transparent',
 };
 
-const animations: Record<TooltipPosition, { initial: object; animate: object }> = {
+const animations: Record<TooltipPosition, { initial: TargetAndTransition; animate: TargetAndTransition }> = {
   top: {
     initial: { opacity: 0, y: 5 },
     animate: { opacity: 1, y: 0 },
