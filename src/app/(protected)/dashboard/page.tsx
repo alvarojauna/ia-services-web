@@ -1,8 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  StatsCard,
+  ProjectsChart,
+  StatusPieChart,
+  ActivityTimeline,
+  ProgressBar,
+} from '@/components/dashboard';
 
 interface Project {
   projectId: string;
@@ -15,11 +23,12 @@ interface Project {
   updatedAt: string;
 }
 
-interface DashboardStats {
-  totalProjects: number;
-  activeProjects: number;
-  completedProjects: number;
-  totalDeliverables: number;
+interface Activity {
+  id: string;
+  type: 'project_created' | 'status_changed' | 'deliverable_uploaded' | 'payment_received';
+  title: string;
+  description: string;
+  timestamp: string;
 }
 
 const statusColors = {
@@ -39,12 +48,6 @@ const statusLabels = {
 export default function DashboardPage() {
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
-  const [stats, setStats] = useState<DashboardStats>({
-    totalProjects: 0,
-    activeProjects: 0,
-    completedProjects: 0,
-    totalDeliverables: 0,
-  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -55,17 +58,7 @@ export default function DashboardPage() {
         const response = await fetch(`/api/projects?userId=${user.userId}`);
         if (response.ok) {
           const data = await response.json();
-          const userProjects = data.projects || [];
-          setProjects(userProjects);
-
-          // Calculate stats
-          setStats({
-            totalProjects: userProjects.length,
-            activeProjects: userProjects.filter((p: Project) => p.status === 'in_progress').length,
-            completedProjects: userProjects.filter((p: Project) => p.status === 'completed').length,
-            totalDeliverables: userProjects.reduce((acc: number, p: Project) =>
-              p.status === 'completed' ? acc + 1 : acc, 0),
-          });
+          setProjects(data.projects || []);
         }
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -77,121 +70,234 @@ export default function DashboardPage() {
     fetchProjects();
   }, [user?.userId]);
 
+  // Calculate stats
+  const stats = useMemo(() => ({
+    totalProjects: projects.length,
+    activeProjects: projects.filter((p) => p.status === 'in_progress').length,
+    completedProjects: projects.filter((p) => p.status === 'completed').length,
+    pendingProjects: projects.filter((p) => p.status === 'pending').length,
+  }), [projects]);
+
+  // Generate activities from projects
+  const activities = useMemo<Activity[]>(() => {
+    return projects
+      .slice(0, 5)
+      .map((project) => ({
+        id: project.projectId,
+        type: 'project_created' as const,
+        title: `Proyecto creado`,
+        description: project.name,
+        timestamp: project.createdAt,
+      }))
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }, [projects]);
+
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Bienvenido de vuelta
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+          Bienvenido de vuelta{user?.name ? `, ${user.name.split(' ')[0]}` : ''}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
           Aquí tienes un resumen de tus proyectos y actividad reciente.
         </p>
-      </div>
+      </motion.div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-              <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Proyectos</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {loading ? '-' : stats.totalProjects}
-              </p>
-            </div>
-          </div>
-        </div>
+        <StatsCard
+          title="Total Proyectos"
+          value={stats.totalProjects}
+          loading={loading}
+          color="blue"
+          icon={
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          }
+        />
+        <StatsCard
+          title="En Progreso"
+          value={stats.activeProjects}
+          loading={loading}
+          color="yellow"
+          icon={
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          }
+        />
+        <StatsCard
+          title="Completados"
+          value={stats.completedProjects}
+          loading={loading}
+          color="green"
+          icon={
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          }
+        />
+        <StatsCard
+          title="Pendientes"
+          value={stats.pendingProjects}
+          loading={loading}
+          color="purple"
+          icon={
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          }
+        />
+      </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
-              <svg className="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">En Progreso</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {loading ? '-' : stats.activeProjects}
-              </p>
-            </div>
-          </div>
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <ProjectsChart projects={projects} />
         </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-lg">
-              <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Completados</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {loading ? '-' : stats.completedProjects}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
-              <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Entregables</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {loading ? '-' : stats.totalDeliverables}
-              </p>
-            </div>
-          </div>
+        <div>
+          <StatusPieChart projects={projects} />
         </div>
       </div>
 
-      {/* Recent Projects */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Proyectos Recientes
-            </h2>
-            <Link
-              href="/dashboard/projects"
-              className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
-            >
-              Ver todos
-            </Link>
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="p-6 text-center text-gray-500 dark:text-gray-400">
-            Cargando proyectos...
-          </div>
-        ) : projects.length === 0 ? (
-          <div className="p-12 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
+      {/* Projects & Activity Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Projects */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700"
+        >
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Proyectos Recientes
+              </h2>
+              <Link
+                href="/dashboard/projects"
+                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium"
+              >
+                Ver todos
+              </Link>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              No tienes proyectos todavía
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-4">
-              Cuando contrates un servicio, aparecerá aquí.
+          </div>
+
+          {loading ? (
+            <div className="p-6 space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="animate-pulse flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700" />
+                  <div className="flex-grow">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/4" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : projects.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                No tienes proyectos todavía
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-4">
+                Cuando contrates un servicio, aparecerá aquí.
+              </p>
+              <Link
+                href="/services"
+                className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                Ver servicios
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-200 dark:divide-gray-700">
+              {projects.slice(0, 5).map((project, index) => (
+                <motion.div
+                  key={project.projectId}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Link
+                    href={`/dashboard/projects/${project.projectId}`}
+                    className="flex items-center justify-between p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition group"
+                  >
+                    <div className="flex items-center gap-4 flex-grow min-w-0">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold">
+                        {project.name.charAt(0)}
+                      </div>
+                      <div className="flex-grow min-w-0">
+                        <h3 className="font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          {project.name}
+                        </h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Plan {project.plan}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 ml-4">
+                      <div className="hidden sm:block w-32">
+                        <ProgressBar
+                          progress={project.progress}
+                          size="sm"
+                          showLabel={false}
+                          color={project.status === 'completed' ? 'green' : 'blue'}
+                        />
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right">
+                          {project.progress}%
+                        </p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusColors[project.status]}`}>
+                        {statusLabels[project.status]}
+                      </span>
+                      <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+
+        {/* Activity Timeline */}
+        <div>
+          <ActivityTimeline activities={activities} />
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ y: -4 }}
+          className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white relative overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+          <div className="relative">
+            <h3 className="font-semibold text-lg mb-2">¿Necesitas un nuevo proyecto?</h3>
+            <p className="text-blue-100 text-sm mb-4">
+              Explora nuestros planes y encuentra la solución perfecta para tu negocio.
             </p>
             <Link
               href="/services"
-              className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+              className="inline-flex items-center gap-2 bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition"
             >
               Ver servicios
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,73 +305,14 @@ export default function DashboardPage() {
               </svg>
             </Link>
           </div>
-        ) : (
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            {projects.slice(0, 5).map((project) => (
-              <Link
-                key={project.projectId}
-                href={`/dashboard/projects/${project.projectId}`}
-                className="flex items-center justify-between p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900 dark:text-white">
-                      {project.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Plan {project.plan}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="hidden sm:block">
-                    <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${project.progress}%` }}
-                      />
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 text-right">
-                      {project.progress}%
-                    </p>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[project.status]}`}>
-                    {statusLabels[project.status]}
-                  </span>
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+        </motion.div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 text-white">
-          <h3 className="font-semibold text-lg mb-2">¿Necesitas un nuevo proyecto?</h3>
-          <p className="text-blue-100 text-sm mb-4">
-            Explora nuestros planes y encuentra la solución perfecta para tu negocio.
-          </p>
-          <Link
-            href="/services"
-            className="inline-flex items-center gap-2 bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition"
-          >
-            Ver servicios
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </Link>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ y: -4 }}
+          className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700"
+        >
           <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2">
             ¿Tienes preguntas?
           </h3>
@@ -281,7 +328,7 @@ export default function DashboardPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </Link>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

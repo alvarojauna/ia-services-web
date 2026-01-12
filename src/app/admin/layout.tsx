@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import AdminGuard from '@/components/AdminGuard';
+import dynamic from 'next/dynamic';
 
 const navigation = [
   {
@@ -45,11 +46,7 @@ const navigation = [
   },
 ];
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const router = useRouter();
@@ -178,5 +175,17 @@ export default function AdminLayout({
         </div>
       </div>
     </AdminGuard>
+  );
+}
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <AuthProvider>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </AuthProvider>
   );
 }

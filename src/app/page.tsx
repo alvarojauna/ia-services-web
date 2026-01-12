@@ -1,159 +1,121 @@
+'use client';
+
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-
-const services = [
-  {
-    title: 'Chatbots IA',
-    description: 'Asistentes virtuales inteligentes para tu negocio que atienden 24/7.',
-    icon: '🤖',
-  },
-  {
-    title: 'Modelos ML',
-    description: 'Modelos de Machine Learning personalizados para tus necesidades.',
-    icon: '🧠',
-  },
-  {
-    title: 'Automatización',
-    description: 'Automatiza procesos repetitivos con inteligencia artificial.',
-    icon: '⚡',
-  },
-  {
-    title: 'Consultoría',
-    description: 'Asesoramiento experto para implementar IA en tu empresa.',
-    icon: '💡',
-  },
-];
-
-const testimonials = [
-  {
-    name: 'María García',
-    company: 'TechStartup',
-    text: 'Excelente trabajo. El chatbot que nos desarrollaron aumentó nuestras conversiones un 30%.',
-    rating: 5,
-  },
-  {
-    name: 'Carlos López',
-    company: 'E-commerce Pro',
-    text: 'Muy profesional y entrega a tiempo. Totalmente recomendado.',
-    rating: 5,
-  },
-];
+import {
+  AnimatedBackground,
+  TechLogosScroll,
+  StatsSection,
+  TestimonialsCarousel,
+  CTASection,
+  FeaturesSection,
+} from '@/components/landing';
+import FadeInOnScroll from '@/components/animations/FadeInOnScroll';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       <Header />
 
       <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Soluciones de IA para tu Negocio
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
-              Desarrollamos chatbots, modelos de ML y automatizaciones que transforman tu empresa.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/services"
-                className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition"
-              >
-                Ver Servicios
-              </Link>
-              <Link
-                href="/contact"
-                className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition"
-              >
-                Contactar
-              </Link>
-            </div>
+        {/* Hero Section - Premium */}
+        <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+          {/* Animated gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800" />
+
+          {/* Particle animation */}
+          <AnimatedBackground />
+
+          {/* Gradient orbs */}
+          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400/30 rounded-full blur-3xl animate-float" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '-2s' }} />
+
+          {/* Content */}
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+            <FadeInOnScroll>
+              <span className="inline-block px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-medium mb-6">
+                Transformamos negocios con Inteligencia Artificial
+              </span>
+            </FadeInOnScroll>
+
+            <FadeInOnScroll delay={0.1}>
+              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+                Soluciones de{' '}
+                <span className="relative">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-200 animate-gradient-x">
+                    IA
+                  </span>
+                </span>
+                <br />
+                para tu Negocio
+              </h1>
+            </FadeInOnScroll>
+
+            <FadeInOnScroll delay={0.2}>
+              <p className="text-xl md:text-2xl text-blue-100 mb-10 max-w-3xl mx-auto leading-relaxed">
+                Desarrollamos chatbots inteligentes, modelos de ML personalizados y automatizaciones que{' '}
+                <span className="text-white font-semibold">transforman tu empresa</span>.
+              </p>
+            </FadeInOnScroll>
+
+            <FadeInOnScroll delay={0.3}>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/services">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-4 bg-white text-blue-600 rounded-xl font-bold text-lg shadow-2xl hover:shadow-white/25 transition-shadow"
+                  >
+                    Ver Servicios
+                  </motion.button>
+                </Link>
+                <Link href="/contact">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-4 border-2 border-white/30 text-white rounded-xl font-bold text-lg hover:bg-white/10 transition-colors backdrop-blur-sm"
+                  >
+                    Contactar
+                  </motion.button>
+                </Link>
+              </div>
+            </FadeInOnScroll>
+
+            {/* Scroll indicator */}
+            <FadeInOnScroll delay={0.5}>
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+                <motion.div
+                  animate={{ y: [0, 10, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="text-white/60"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </motion.div>
+              </div>
+            </FadeInOnScroll>
           </div>
         </section>
 
-        {/* Services Section */}
-        <section className="py-20 bg-gray-50 dark:bg-gray-800">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-              Nuestros Servicios
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {services.map((service) => (
-                <div
-                  key={service.title}
-                  className="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-sm hover:shadow-md transition"
-                >
-                  <div className="text-4xl mb-4">{service.icon}</div>
-                  <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                    {service.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300">{service.description}</p>
-                </div>
-              ))}
-            </div>
-            <div className="text-center mt-10">
-              <Link
-                href="/services"
-                className="text-blue-600 font-semibold hover:text-blue-700"
-              >
-                Ver todos los planes →
-              </Link>
-            </div>
-          </div>
-        </section>
+        {/* Tech Logos Scroll */}
+        <div className="bg-gray-900">
+          <TechLogosScroll />
+        </div>
 
-        {/* Testimonials Section */}
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-              Lo que dicen nuestros clientes
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {testimonials.map((testimonial) => (
-                <div
-                  key={testimonial.name}
-                  className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700"
-                >
-                  <div className="flex mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <span key={i} className="text-yellow-400">★</span>
-                    ))}
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4 italic">
-                    &ldquo;{testimonial.text}&rdquo;
-                  </p>
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white">
-                      {testimonial.name}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {testimonial.company}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* Features/Services Section */}
+        <FeaturesSection />
+
+        {/* Stats Section */}
+        <StatsSection />
+
+        {/* Testimonials Carousel */}
+        <TestimonialsCarousel />
 
         {/* CTA Section */}
-        <section className="py-20 bg-blue-600 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold mb-4">
-              ¿Listo para transformar tu negocio con IA?
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Contáctanos hoy y te ayudamos a implementar soluciones de inteligencia artificial.
-            </p>
-            <Link
-              href="/contact"
-              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition inline-block"
-            >
-              Solicitar Presupuesto
-            </Link>
-          </div>
-        </section>
+        <CTASection />
       </main>
 
       <Footer />

@@ -1,5 +1,6 @@
 'use client';
 
+import { AuthProvider } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function ProtectedLayout({
@@ -7,5 +8,9 @@ export default function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <ProtectedRoute>{children}</ProtectedRoute>;
+  return (
+    <AuthProvider>
+      <ProtectedRoute>{children}</ProtectedRoute>
+    </AuthProvider>
+  );
 }
