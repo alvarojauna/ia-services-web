@@ -72,7 +72,7 @@ export default function StatsCard({
             ) : (
               <>
                 <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                  <AnimatedCounter end={value} duration={1.5} />
+                  <AnimatedCounter value={value} duration={1.5} />
                 </span>
                 {suffix && (
                   <span className="text-lg text-gray-500 dark:text-gray-400">
